@@ -24,7 +24,7 @@
     ```
     source myenv/bin/activate
     ```
-7. Fill out the json form with your information (format included on the form)
+7. Fill out the json form with your information (Make absolute sure that the values match the values on the website identically)
 
 8. Run the script!
 
