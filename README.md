@@ -1,6 +1,6 @@
 # Bethpage TeeTime Booker Script
 
-1. download this repo to your desktop
+1. Download this repo to your desktop
 2. Open your terminal and navigate to your desktop directory.
 3. Run the following command to clone the repository:
 
