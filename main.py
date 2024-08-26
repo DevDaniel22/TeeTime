@@ -1,5 +1,6 @@
 from selenium import webdriver
 import datetime
+import time
 import json
 
 def main():
@@ -29,6 +30,8 @@ def main():
     email_field.send_keys(password)
 
     # TODO: click the actual login button
+    login_button = driver.find_element_by_xpath("//button[contains(text(), 'Log In')]")
+    login_button.click()
 
     # select course, date, time, number of people
     course_select = driver.find_element_by_id("schedule_select")
