@@ -1,4 +1,12 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.keys import Keys
 import datetime
 import time
 import json
@@ -11,55 +19,83 @@ def main():
     password = data['password']
     course = data['course']
     date = data['date']
-    latest_time = data['latest_time']
+    timeIn = data['timeIn']
     num_people = data['num_people']
     
-    driver = webdriver.Chrome()
-    # brings session to login page
+    options = Options()
+    options.add_argument("start-maximized")
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.get("https://foreupsoftware.com/index.php/booking/19765/2431#teetimes")
-    button = driver.find_element_by_xpath("//button[contains(text(), 'Verified NYS Resident - Bethpage Only')]")
-    button.click()
 
-    button = driver.find_element_by_xpath("//button[contains(text(), 'Log In')]")
+    button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//button[text()='Verified NYS Resident - Bethpage Only']"))
+    )
     button.click()
-
-    email_field = driver.find_element_by_id("login_email")
+    button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//button[text()='Log In']"))
+    )
+    button.click()
+    email_field = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "login_email"))
+    )
     email_field.send_keys(email)
 
-    email_field = driver.find_element_by_id("login_password")
-    email_field.send_keys(password)
+    password_field = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "login_password"))
+    )
+    password_field.send_keys(password)
 
     # TODO: click the actual login button
-    login_button = driver.find_element_by_xpath("//button[contains(text(), 'Log In')]")
+    login_button =  WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//button[@data-loading-text='Logging In...']"))
+    )
     login_button.click()
 
     # select course, date, time, number of people
-    course_select = driver.find_element_by_id("schedule_select")
-    course_option = course_select.find_element_by_xpath(f"//option[text()='{course}']")
-    course_option.click()
+    course_select = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "schedule_select"))
+    )
+    selectCourse = Select(course_select)
+    selectCourse.select_by_value(f"{course}")
+    
+    
+    # select the date
+    date_field = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "date-field"))
+    )
+    date_field.clear()
+    date_field.send_keys(Keys.CONTROL + "a")  # Select all existing text
+    date_field.send_keys(Keys.DELETE)
+    date_field.send_keys(date)
 
-    course_select = driver.find_element_by_id("date-menu")
-    course_option = course_select.find_element_by_xpath(f"//option[text()='{date}']")
-    course_option.click()
+    players_div = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "players"))
+    )
+    selectPlayers = players_div.find_element(By.CSS_SELECTOR, f'a[data-value="{num_people}"]')
+    selectPlayers.click()
 
-    players_div = driver.find_element_by_xpath("//div[@label='Players']")
-    link = players_div.find_element_by_xpath(f"//a[@data-value='{num_people}']")
-    link.click()
-    # TODO: check if any tiles exist, if not refresh and wait for them to appear
-
-    while driver.find_element_by_id("times-empty") or booking_time >= latest_time:
-        driver.refresh()
-        time_tiles = driver.find_element_by_class_name("time-tiles")
-        first_child = time_tiles.find_element_by_xpath("./*[1]")
-        booking_start_time_label = first_child.find_element_by_class_name("booking-start-time-label")
-        text = booking_start_time_label.text
-        booking_time = datetime.datetime.strptime(text, "%I:%M%p").time()
-
-    first_child.click()
-
-    button = driver.find_element_by_xpath("//button[contains(text(), 'Book Time')]")
+    time_div = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "js-time-filter"))
+    )
+    button = time_div.find_element(By.CSS_SELECTOR, f'a[data-value="{timeIn}"]')
     button.click()
-    # ends the session
-    driver.quit()
 
 
+    first_tile = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "time-tile"))
+    )
+    first_tile.click()
+
+
+    players_div = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "js-booking-field-buttons"))
+    )
+    selectPlayers = players_div.find_element(By.CSS_SELECTOR, f'a[data-value="{num_people}"]')
+    selectPlayers.click()
+    # button = driver.find_element(By.XPATH, "//button[contains(text(), 'Book Time')]")
+    # button.click()
+    time.sleep(7)
+
+
+
+main()

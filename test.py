@@ -58,30 +58,30 @@ def main():
     selectPlayers.click()
 
 
-    # time_tiles = driver.find_element_by_class_name("time-tiles")
-    # first_child = time_tiles.find_element_by_xpath("./*[1]")
-    # booking_start_time_label = first_child.find_element_by_class_name("booking-start-time-label")
-    # text = booking_start_time_label.text
-    # booking_time = datetime.datetime.strptime(text, "%I:%M%p").time()
-    # if booking_time < latest_time:
-    #     first_child.click()
-    #     print("Button clicked successfully.")
-    # else:
-    #     print("Booking start time is later than the latest time.")
+    time_tiles = driver.find_element_by_class_name("time-tiles")
+    first_child = time_tiles.find_element_by_xpath("./*[1]")
+    booking_start_time_label = first_child.find_element_by_class_name("booking-start-time-label")
+    text = booking_start_time_label.text
+    booking_time = datetime.datetime.strptime(text, "%I:%M%p").time()
+    if booking_time < latest_time:
+        first_child.click()
+        print("Button clicked successfully.")
+    else:
+        print("Booking start time is later than the latest time.")
 
     
 
-    # button = driver.find_element_by_xpath("//button[contains(text(), 'Book Time')]")
-    # button.click()
+    button = driver.find_element_by_xpath("//button[contains(text(), 'Book Time')]")
+    button.click()
     
-    # email_field = driver.find_element_by_id("login_email")
-    # email_field.send_keys(email)
+    email_field = driver.find_element_by_id("login_email")
+    email_field.send_keys(email)
 
-    # email_field = driver.find_element_by_id("login_password")
-    # email_field.send_keys(password)
+    email_field = driver.find_element_by_id("login_password")
+    email_field.send_keys(password)
 
-    # login_button = driver.find_element_by_xpath("//button[contains(text(), 'Log In')]")
-    # login_button.click()
+    login_button = driver.find_element_by_xpath("//button[contains(text(), 'Log In')]")
+    login_button.click()
 
     # ends the session
     driver.quit()
