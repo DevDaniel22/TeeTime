@@ -10,6 +10,8 @@ from selenium.webdriver.common.keys import Keys
 import datetime
 import time
 import json
+from datetime import datetime, timedelta
+import pytz
 
 def main():
     with open('inputs.json') as file:
@@ -58,7 +60,26 @@ def main():
     selectCourse = Select(course_select)
     selectCourse.select_by_value(f"{course}")
     
-    
+    est = pytz.timezone('US/Eastern')
+
+    # Get the current time in UTC
+    now_utc = datetime.now(pytz.utc)
+
+    # Get the current time in EST
+    now_est = now_utc.astimezone(est)
+    target_time_est = now_est.replace(hour=17, minute=44, second=0, microsecond=0)
+
+    # Calculate the time difference in seconds
+    time_difference = (target_time_est - now_est).total_seconds()
+
+    # Wait until the exact time
+    time.sleep(time_difference)
+
+
+
+
+
+
     # select the date
     date_field = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "date-field"))
@@ -81,7 +102,7 @@ def main():
     button.click()
 
 
-    first_tile = WebDriverWait(driver, 10).until(
+    first_tile = WebDriverWait(driver, 40).until(
         EC.presence_of_element_located((By.CLASS_NAME, "time-tile"))
     )
     first_tile.click()
